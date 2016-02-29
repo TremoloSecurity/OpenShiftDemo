@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wp-openunison
+spec:
+  selector:
+    name: wp-openunison
+  ports:
+  - nodePort: 0
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+    name: open
+  - nodePort: 0
+    port: 443
+    protocol: TCP
+    targetPort: 8443
+    name: secure

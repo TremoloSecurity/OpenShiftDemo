@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tremoloConfig xmlns="http://www.tremolosecurity.com/tremoloConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.tremolosecurity.com/tremoloConfig tremoloConfig.xsd">
+  <applications openSessionCookieName="openSession" openSessionTimeout="9000">
+    <application name="LoginTest" azTimeoutMillis="30000" >
+      <urls>
+        <!-- The regex attribute defines if the proxyTo tag should be interpreted with a regex or not -->
+        <!-- The authChain attribute should be the name of an authChain -->
+        <url regex="false" authChain="idaas" overrideHost="true" overrideReferer="true">
+          <!-- Any number of host tags may be specified to allow for an application to work on multiple hosts.  Additionally an asterick (*) can be specified to make this URL available for ALL hosts -->
+          <host>#[OPENUNISON_HOST]</host>
+          <!-- The filterChain allows for transformations of the request such as manipulating attributes and injecting headers -->
+          <filterChain>
+            <filter class="com.tremolosecurity.proxy.filters.HideCookie" />
+
+            <filter class="com.tremolosecurity.proxy.filters.PreAuthFilter">
+              <!-- Determines if a SAML assertion should be generated and posted to the Pre-Auth URL. If checked an Identity Provider MUST be created to supply the configuration information to generate the assertion.  -->
+              <param name="postSAML" value="false"/>
+              <!-- The fully qualified domain name (FQDN) and uri of the URL in Unison configured with a LastMile filter configured, only needed if postSAML is true -->
+              <param name="url" value="http://wpopenunison-demo-idaas.tremolo.lan/wp-login.php"/>
+            </filter>
+
+            <filter class="com.tremolosecurity.proxy.filters.LastMile">
+              <!-- The key used to encrypt the last mile header     -->
+              <param value="lastmile-wordpress" name="encKeyAlias" />
+              <!-- The number of milliseconds that the last mile token is valid     -->
+              <param value="1000" name="timeScew" />
+              <!-- The name of the header   -->
+              <param value="tremoloHeader" name="headerName" />
+              <!-- Each attribs lists a mapping from a user attribute to the attribute in the last mile token -->
+              <param value="objectguid=objectguid" name="attribs" />
+              <param name="userAttribute" value="objectguid" />
+
+              <!--
+              <param name="attribs" value="X-Forwarded-For=X-Forwarded-For"/>
+              <param name="attribs" value="X-Forwarded-Host=X-Forwarded-Host"/>
+              <param name="attribs" value="X-Forwarded-Proto=X-Forwarded-Proto"/>
+            -->
+            </filter>
+          </filterChain>
+          <!-- The URI (aka path) of this URL -->
+          <uri>/</uri>
+          <!-- Tells OpenUnison how to reach the downstream application.  The ${} lets you set any request variable into the URI, but most of the time ${fullURI} is sufficient -->
+          <proxyTo>http://wpfrontend${fullURI}</proxyTo>
+          <!-- List the various results that should happen -->
+          <results>
+            <azSuccess>
+            </azSuccess>
+          </results>
+          <!-- Determine if the currently logged in user may access the resource.  If ANY rule succeeds, the authorization succeeds.
+          The scope may be one of group, dn, filter, dynamicGroup or custom
+          The constraint identifies what needs to be satisfied for the authorization to pass and is dependent on the scope:
+            * group - The DN of the group in OpenUnison's virtual directory (must be an instance of groupOfUniqueNames)
+            * dn - The base DN of the user or users in OpenUnison's virtual directory
+            * dynamicGroup - The DN of the dynamic group in OpenUnison's virtual directory (must be an instance of groupOfUrls)
+            * custom - An implementation of com.tremolosecurity.proxy.az.CustomAuthorization -->
+          <azRules>
+            <rule scope="dn" constraint="o=Tremolo" />
+          </azRules>
+        </url>
+
+        <url regex="false" authChain="idaas" overrideHost="true" overrideReferer="true">
+          <!-- Any number of host tags may be specified to allow for an application to work on multiple hosts.  Additionally an asterick (*) can be specified to make this URL available for ALL hosts -->
+          <host>#[OPENUNISON_HOST]</host>
+          <!-- The filterChain allows for transformations of the request such as manipulating attributes and injecting headers -->
+          <filterChain>
+            <filter class="com.tremolosecurity.proxy.filters.HideCookie" />
+
+            <filter class="com.tremolosecurity.unison.proxy.ext.filters.WPLoginFilter">
+              <param name="redirectTo" value="/" />
+              <param name="logout" value="/logout" />
+            </filter>
+
+
+            <filter class="com.tremolosecurity.proxy.filters.LastMile">
+              <!-- The key used to encrypt the last mile header     -->
+              <param value="lastmile-wordpress" name="encKeyAlias" />
+              <!-- The number of milliseconds that the last mile token is valid     -->
+              <param value="1000" name="timeScew" />
+              <!-- The name of the header   -->
+              <param value="tremoloHeader" name="headerName" />
+              <!-- Each attribs lists a mapping from a user attribute to the attribute in the last mile token -->
+              <param value="objectguid=objectguid" name="attribs" />
+              <param name="userAttribute" value="objectguid" />
+
+              <!--
+              <param name="attribs" value="X-Forwarded-For=X-Forwarded-For"/>
+              <param name="attribs" value="X-Forwarded-Host=X-Forwarded-Host"/>
+              <param name="attribs" value="X-Forwarded-Proto=X-Forwarded-Proto"/>
+            -->
+            </filter>
+          </filterChain>
+          <!-- The URI (aka path) of this URL -->
+          <uri>/wp-login.php</uri>
+          <!-- Tells OpenUnison how to reach the downstream application.  The ${} lets you set any request variable into the URI, but most of the time ${fullURI} is sufficient -->
+          <proxyTo>http://wpfrontend${fullURI}</proxyTo>
+          <!-- List the various results that should happen -->
+          <results>
+            <azSuccess>
+            </azSuccess>
+          </results>
+          <!-- Determine if the currently logged in user may access the resource.  If ANY rule succeeds, the authorization succeeds.
+          The scope may be one of group, dn, filter, dynamicGroup or custom
+          The constraint identifies what needs to be satisfied for the authorization to pass and is dependent on the scope:
+            * group - The DN of the group in OpenUnison's virtual directory (must be an instance of groupOfUniqueNames)
+            * dn - The base DN of the user or users in OpenUnison's virtual directory
+            * dynamicGroup - The DN of the dynamic group in OpenUnison's virtual directory (must be an instance of groupOfUrls)
+            * custom - An implementation of com.tremolosecurity.proxy.az.CustomAuthorization -->
+          <azRules>
+            <rule scope="dn" constraint="o=Tremolo" />
+          </azRules>
+        </url>
+
+        
+
+
+
+
+
+
+
+        <url regex="false" authChain="formloginFilter" overrideHost="true" overrideReferer="true">
+          <!-- Any number of host tags may be specified to allow for an application to work on multiple hosts.  Additionally an asterick (*) can be specified to make this URL available for ALL hosts -->
+          <host>#[OPENUNISON_HOST]</host>
+          <!-- The filterChain allows for transformations of the request such as manipulating attributes and injecting headers -->
+          <filterChain>
+            <filter class="com.tremolosecurity.prelude.filters.StopProcessing" />
+          </filterChain>
+          <!-- The URI (aka path) of this URL -->
+          <uri>/logout</uri>
+          <!-- Tells OpenUnison how to reach the downstream application.  The ${} lets you set any request variable into the URI, but most of the time ${fullURI} is sufficient -->
+          <proxyTo>http://dnm${fullURI}</proxyTo>
+          <!-- List the various results that should happen -->
+          <results>
+            <azSuccess>Logout</azSuccess>
+          </results>
+          <!-- Determine if the currently logged in user may access the resource.  If ANY rule succeeds, the authorization succeeds.
+                    The scope may be one of group, dn, filter, dynamicGroup or custom
+                    The constraint identifies what needs to be satisfied for the authorization to pass and is dependent on the scope:
+                      * group - The DN of the group in OpenUnison's virtual directory (must be an instance of groupOfUniqueNames)
+                      * dn - The base DN of the user or users in OpenUnison's virtual directory
+                      * dynamicGroup - The DN of the dynamic group in OpenUnison's virtual directory (must be an instance of groupOfUrls)
+                      * custom - An implementation of com.tremolosecurity.proxy.az.CustomAuthorization -->
+          <azRules>
+            <rule scope="dn" constraint="o=Tremolo" />
+          </azRules>
+        </url>
+      </urls>
+      <!-- The cookie configuration determines how sessions are managed for this application -->
+      <cookieConfig>
+        <!-- The name of the session cookie for this application.  Applications that want SSO between them should have the same cookie name -->
+        <sessionCookieName>tremolosession</sessionCookieName>
+        <!-- The domain of component of the cookie -->
+        <domain>#[OPENUNISON_HOST]</domain>
+        <!-- The URL that OpenUnison will interpret as the URL to end the session -->
+        <logoutURI>/logout</logoutURI>
+        <!-- The name of the AES-256 key in the keystore to use to encrypt this session -->
+        <keyAlias>#[OPENUNISON_SESSION_KEY]</keyAlias>
+        <!-- If set to true, the cookie's secure flag is set to true and the browser will only send this cookie over https connections -->
+        <secure>false</secure>
+        <!-- The number of secconds that the session should be allowed to be idle before no longer being valid -->
+        <timeout>900</timeout>
+        <!-- required but ignored -->
+        <scope>-1</scope>
+      </cookieConfig>
+    </application>
+  </applications>
+  <myvdConfig>/etc/openunison/myvd.conf</myvdConfig>
+  <authMechs>
+    <mechanism name="loginForm">
+      <uri>/auth/formLogin</uri>
+      <className>com.tremolosecurity.proxy.auth.FormLoginAuthMech</className>
+      <init>
+      </init>
+      <params>
+        <param>FORMLOGIN_JSP</param>
+      </params>
+    </mechanism>
+    <mechanism name="anonymous">
+      <uri>/auth/anon</uri>
+      <className>com.tremolosecurity.proxy.auth.AnonAuth</className>
+      <init>
+        <!-- The RDN of unauthenticated users -->
+        <param name="userName" value="uid=Anonymous"/>
+        <!-- Any number of attributes can be added to the anonymous user -->
+        <param name="role" value="Users" />
+      </init>
+      <params>
+      </params>
+    </mechanism>
+    <mechanism name="SAML2">
+      <uri>/auth/SAML2Auth</uri>
+      <className>com.tremolosecurity.proxy.auth.SAML2Auth</className>
+      <init>
+      </init>
+      <params />
+    </mechanism>
+    <mechanism name="jit">
+      <uri>/auth/jit</uri>
+      <className>com.tremolosecurity.provisioning.auth.JITAuthMech</className>
+      <init></init>
+      <params></params>
+    </mechanism>
+  </authMechs>
+  <authChains>
+    <!-- An anonymous authentication chain MUST be level 0 -->
+    <chain name="anon" level="0">
+      <authMech>
+        <name>anonymous</name>
+        <required>required</required>
+        <params>
+        </params>
+      </authMech>
+    </chain>
+    <chain name="formloginFilter" level="1">
+      <authMech>
+        <name>loginForm</name>
+        <required>required</required>
+        <params>
+          <!-- Path to the login form -->
+          <param name="FORMLOGIN_JSP" value="/auth/forms/defaultForm.jsp"/>
+          <!-- Either an attribute name OR an ldap filter mapping the form parameters. If this is an ldap filter, form parameters are identified by ${parameter} -->
+          <param name="uidAttr" value="uid"/>
+          <!-- If true, the user is determined based on an LDAP filter rather than a simple user lookup -->
+          <param name="uidIsFilter" value="false"/>
+        </params>
+      </authMech>
+    </chain>
+    <chain level="20" name="idaas">
+      <authMech>
+        <name>SAML2</name>
+        <required>required</required>
+        <params>
+          <!-- The assertion consumer service URL -->
+          <param value="http://openunison-demo-idaas.tremolo.lan/auth/idp/Wordpress/httpRedirect"
+        name="idpURL" />
+          <!-- The HTTP-Redirect endpoint -->
+          <param value="http://openunison-demo-idaas.tremolo.lan/auth/idp/Wordpress/httpRedirect"
+      name="idpRedirURL" />
+          <!-- The name of the certificate used to validate the signed response / assertion  -->
+          <param
+        value="verify-sigenc-idp-saml2-sig"
+        name="idpSigKeyName" />
+          <!-- The RDN for an account that can not be linked to a user in the virtual directory -->
+          <param value="uid" name="ldapAttribute" />
+          <!-- The OU of an account that can not be linked to a user in the virtual directory -->
+          <param value="idaas" name="dnOU" />
+          <!-- Object Class for an account that can not be linked to a user in the virtual directory -->
+          <param value="inetOrgPerson" name="defaultOC" />
+          <!-- The required authentication mechanism to be used by the identity provider -->
+          <param name="authCtxRef" value="urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport"/>
+          <!-- The certificate used to sign all outbound requests (AuthnRequest and LogoutRequest) -->
+          <param name="spSigKey" value="" />
+          <!-- The SingleLogout URL of the Identity Provider -->
+          <param value=""
+        name="idpRedirLogoutURL" />
+          <!-- The final URL users are sent to after login is complete -->
+          <param name="logoutURL" value="" />
+          <!-- The algorithm used to sign AuthnRequests and LogoutRequests -->
+          <param name="sigAlg" value="RSA-SHA256" />
+          <!-- The entityID of the remote identity provider -->
+          <param name="entityID" value="http://openunison-demo-idaas.tremolo.lan/auth/idp/Wordpress" />
+          <!-- True if outbound requests should be signed -->
+          <param name="signAuthnReq" value="false"/>
+          <!-- Determine if inbound assertions must be signed -->
+          <param name="assertionsSigned" value="false" />
+          <!-- Determine if inbound SAMLResponse must be signed -->
+          <param name="responsesSigned" value="true" />
+          <!-- If set to true, requires inbound assertions to be encrypted -->
+          <param name="assertionEncrypted" value="false" />
+          <!-- If assertionEncrypted is set to true, names the key used to decrypt the assertion -->
+          <param name="spEncKey" value="" />
+          <!-- If set to true, will force outbound requests to secure connections -->
+          <param name="forceToSSL" value="false" />
+          <!-- If set, provides a page notifying the user that they will be redirected to another site for authentication -->
+          <param name="jumpPage" value="" />
+          <!-- If true, OpenUnison will not attempt to find the user in the virtual directory, usually used with just-in-time provisioning -->
+          <param name="dontLinkToLDAP" value="true" />
+        </params>
+      </authMech>
+      <authMech>
+       <name>jit</name>
+       <required>required</required>
+       <params>
+           <!-- The name of the attribute that will be used as the user identifier-->
+           <param name="nameAttr" value="objectguid" />
+           <!-- The name of the workflow -->
+           <param name="workflowName" value="wp-jit" />
+       </params>
+     </authMech>
+    </chain>
+  </authChains>
+  <resultGroups>
+    <!-- The name attribute is how the resultGroup is referenced in the URL -->
+    <resultGroup name="Logout">
+      <!-- Each result should be listed -->
+      <result>
+        <!-- The type of result, one of cookie, header or redirect -->
+        <type>redirect</type>
+        <!-- The source of the result value, one of user, static, custom -->
+        <source>static</source>
+        <!-- Name of the resuler (in this case a cookie) and the value -->
+        <value>http://openunison-demo-idaas.tremolo.lan/logout</value>
+      </result>
+    </resultGroup>
+  </resultGroups>
+  <keyStorePath>/etc/openunison/unisonKeyStore.jks</keyStorePath>
+  <keyStorePassword>start123</keyStorePassword>
+  <provisioning>
+    <targets>
+      <target name="Wordpress" className="com.tremolosecurity.provisioning.core.providers.BasicDB">
+        <params>
+          <param name="driver" value="com.mysql.jdbc.Driver"/>
+          <param name="url" value="jdbc:mysql://docker2.tremolo.lan:3306/wordpress"/>
+          <param name="user" value="root"/>
+          <param name="password" value="secret"/>
+          <param name="maxCons" value="20"/>
+          <param name="maxIdleCons" value="20"/>
+          <param name="userPrimaryKey" value="ID"/>
+          <param name="userName" value="user_login"/>
+          <param name="groupMode" value="Custom"/>
+          <param name="groupTable" value=""/>
+          <param name="groupName" value="meta_value"/>
+          <param name="groupUserKey" value="user_id"/>
+          <param name="groupLinkTableName" value=""/>
+          <param name="groupGroupKey" value=""/>
+          <param name="groupPrimaryKey" value=""/>
+          <param name="userSQL" value="select %S from wp_unisonusers WHERE user_login=%L"/>
+          <param name="groupSQL" value="select %S from wp_users inner join wp_usermeta on wp_usermeta.user_id=wp_users.id AND wp_usermeta.meta_key='wp_capabilities' where wp_users.id=%I"/>
+          <param name="customProvider" value="com.tremolosecurity.unison.provisioning.providers.ext.WordPressProvider"/>
+          <param name="beginEscape" value=""/>
+          <param name="endEscape" value=""/>
+          <param name="validationQuery" value="SELECT 1"/>
+        </params>
+        <targetAttribute name="first_name" source="first_name" sourceType="user"/>
+        <targetAttribute name="last_name" source="last_name" sourceType="user"/>
+        <targetAttribute name="display_name" source="display_name" sourceType="user"/>
+        <targetAttribute name="user_nicename" source="user_nicename" sourceType="user"/>
+        <targetAttribute name="user_email" source="user_email" sourceType="user"/>
+        <targetAttribute name="use_ssl" source="0" sourceType="static"/>
+      </target>
+    </targets>
+    <workflows>
+      <workflow name="wp-jit" label="" description="" inList="false" orgid="687da09f-8ec1-48ac-b035-f2f182b9bd1e">
+        <mapping strict="true">
+          <map>
+            <mapping targetAttributeName="user_email" targetAttributeSource="mail" sourceType="user"/>
+            <mapping targetAttributeName="first_name" targetAttributeSource="givenName" sourceType="user"/>
+            <mapping targetAttributeName="last_name" targetAttributeSource="sn" sourceType="user"/>
+            <mapping targetAttributeName="display_name" targetAttributeSource="displayName" sourceType="user"/>
+            <mapping targetAttributeName="user_nicename" targetAttributeSource="displayName" sourceType="user"/>
+            <mapping targetAttributeName="roles" targetAttributeSource="roles" sourceType="user"/>
+          </map>
+
+          <customTask className="com.tremolosecurity.provisioning.customTasks.Attribute2Groups">
+            <!-- The name of the attribute to get the group values from. Once the values are added, the attribute is removed from the user.               -->
+            <param name="attributeName" value="roles"/>
+          </customTask>
+
+          <provision sync="true" target="Wordpress" setPassword="false"/>
+        </mapping>
+      </workflow>
+    </workflows>
+    <org name="MyOrg" description="MyOrg Enterprise Applications" uuid="687da09f-8ec1-48ac-b035-f2f182b9bd1e" />
+    <portal />
+    <scheduler useDB="false" threadCount="3" instanceLabel="testing" instanceIPMask="127"/>
+    <listeners/>
+    <reports />
+  </provisioning>
+  </tremoloConfig>

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scale
+spec:
+  selector:
+    name: scale
+  ports:
+  - nodePort: 0
+    port: 8080
+    protocol: TCP
+    targetPort: 8080

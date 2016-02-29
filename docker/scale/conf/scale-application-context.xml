@@ -1,0 +1,15 @@
+<Context>
+  <Environment name="scaleConfigPath" value="/etc/scale/main/scaleConfig.xml" type="java.lang.String"/>
+  <Environment name="scaleLog4jPath" value="/etc/scale/main/log4j.xml" type="java.lang.String"/>
+
+  <Valve
+     className="com.tremolosecurity.valve.TremoloValve"
+     headerName="tremoloHeader"
+     userAttribute="${scale.uid.attr}"
+     roleAttribute=""
+     createHeaders="true"
+     encryptionKeyName="${scale.lastmile.keyname}"
+     ignoreURI=""
+     pathToKeyStore="/etc/scale/lastmile.jks"
+     keyPass="${scale.lastmile.password}"/>
+</Context>

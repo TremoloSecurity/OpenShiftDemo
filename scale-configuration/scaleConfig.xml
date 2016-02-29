@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:ScaleConfig xmlns:tns="http://www.tremolosecurity.com/scale" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.tremolosecurity.com/scale scale-config.xsd ">
+	<tns:serviceConfiguration keyStorePassword="start123" keyStorePath="/etc/scale/scaleKeystore.jks" unisonURL="https://172.30.107.155/" lookupAttributeName="objectguid"/>
+	<tns:UiConfig displayNameAttribute="displayName"  homeURL="/scale/">
+
+	</tns:UiConfig>
+	<tns:appUiConfig useGenericGroups="true" groupsAttribute="mailx" workflowName="Role">
+	      <tns:uiDecsionClass className="com.tremolosecurity.scale.testing.TestUIDecisions">
+	              <tns:initParams name="allowEdit" value="false"/>
+	      </tns:uiDecsionClass>
+	      <tns:frontPage showLinks="true" showLinkOrgs="false">
+	              <tns:title>OpenShift IDaaS Demo</tns:title>
+	              <tns:text>
+	                      Welcome to your enterprise's IDentity as a Service (IDaaS).  Click on "Request Access" to make role requests.
+	              </tns:text>
+	      </tns:frontPage>
+	</tns:appUiConfig>
+	<tns:userAttributesConfig>
+	        <tns:attribute name="displayname" label="Display Name" readOnly="true"
+	                />
+	        <tns:attribute name="uid" label="User Login" readOnly="true" ></tns:attribute>
+	        <tns:attribute name="givenName" label="First Name" readOnly="true" />
+	        <tns:attribute name="sn" label="Last Name" readOnly="true"/>
+	        <tns:attribute name="mail" label="Email Address" readOnly="true"
+	                 />
+									 <tns:attribute name="objectguid" label="Unique ID" readOnly="true"
+				 	                 />
+
+	</tns:userAttributesConfig>
+	<tns:workflows saveUserProfileWorkflowName="doesnotmatter" />
+	<tns:approvals>
+	        <tns:attributes>
+	                <tns:attribute name="displayname" label="Display Name" />
+	                <tns:attribute name="uid" label="User Login" ></tns:attribute>
+	                <tns:attribute name="givenName" label="First Name"  />
+	                <tns:attribute name="sn" label="Last Name" />
+	                <tns:attribute name="mail" label="Email Address"  />
+	        </tns:attributes>
+	</tns:approvals>
+</tns:ScaleConfig>

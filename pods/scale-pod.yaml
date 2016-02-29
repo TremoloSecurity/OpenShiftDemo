@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: scale
+  labels:
+    name: scale
+spec:
+  containers:
+    - resources:
+      image: mlbiam/scale-openshift:latest
+      name: scale
+      env:
+        - name: JAVA_OPTS
+          value: -Dscale.lastmile.keyname=lastmile-scale -Dscale.lastmile.password=start123 -Dscale.uid.attr=objectguid
+      ports:
+        - containerPort: 8080
+          protocol: TCP
+          name: open
+      volumeMounts:
+        - name: scale-config
+          mountPath: /etc/scale
+  volumes:
+    - name: scale-config
+      persistentVolumeClaim:
+        claimName: pvc-scale-conf-mount
+        readOnly: true

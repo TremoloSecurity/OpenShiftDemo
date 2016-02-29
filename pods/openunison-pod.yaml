@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: openunison
+  labels:
+    name: openunison
+spec:
+  containers:
+    - resources:
+      image: mlbiam/openunison-openshift:latest
+      name: openunison
+      env:
+        - name: JAVA_OPTS
+          value: -Dopenunison.pt.port=8080  -Dopenunison.enc.port=8443 -Dopenunison.tls.keyalias=unison-tls -Dopenunison.ks.password=start123 
+        - name: OPENUNISON_HOST
+          value: openunison-demo-idaas.tremolo.lan
+        - name: OPENUNISON_EXT_PT_PORT
+          value: "80"
+        - name: OPENUNISON_EXT_ENC_PORT
+          value: "443"
+        - name: OPENUNISON_FORCE_TO_ENC
+          value: "false"
+        - name: OPENUNISON_SESSION_KEY
+          value: session-unison
+      ports:
+        - containerPort: 8080
+          protocol: TCP
+          name: open
+        - containerPort: 8443
+          protocol: TCP
+          name: secure
+      volumeMounts:
+        - name: openunison-config
+          mountPath: /etc/openunison
+  volumes:
+    - name: openunison-config
+      persistentVolumeClaim:
+        claimName: pvc-etc-openunison-mount
+        readOnly: true

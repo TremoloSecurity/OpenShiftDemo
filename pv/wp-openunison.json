@@ -1,0 +1,18 @@
+{
+  "apiVersion": "v1",
+  "kind": "PersistentVolume",
+  "metadata": {
+    "name": "pv-wp-openunison-conf-mount"
+  },
+  "spec": {
+    "capacity": {
+        "storage": "1Gi"
+    },
+    "accessModes": [ "ReadOnlyMany" ],
+    "nfs": {
+        "path": "/var/nfs/etc-wp-openunison",
+        "server": "nfs-dev.tremolo.lan"
+    },
+    "persistentVolumeReclaimPolicy": "Recycle"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "apiVersion": "v1",
+  "kind": "PersistentVolume",
+  "metadata": {
+    "name": "pv-etc-openunison-mount"
+  },
+  "spec": {
+    "capacity": {
+        "storage": "1Gi"
+    },
+    "accessModes": [ "ReadOnlyMany" ],
+    "nfs": {
+        "path": "/var/nfs/etc-openunison",
+        "server": "nfs-dev.tremolo.lan"
+    },
+    "persistentVolumeReclaimPolicy": "Recycle"
+  }
+}

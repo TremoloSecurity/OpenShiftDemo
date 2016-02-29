@@ -1,0 +1,5 @@
+<Context>
+  <Environment name="unisonConfigPath" value="/etc/openunison/unison.xml" type="java.lang.String"/>
+  <Environment name="unisonLog4jPath" value="/etc/openunison/log4j.xml" type="java.lang.String"/>
+  <Environment name="unisonServiceConfigPath" value="/etc/openunison/unisonService.props" type="java.lang.String"/>
+</Context>
