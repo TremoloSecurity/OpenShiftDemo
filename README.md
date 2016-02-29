@@ -117,7 +117,7 @@ Other then learning how to build and deploy OpenShift, the biggest leasons learn
 
 ## Whats Next?
 
-From here we're going to be updating our Docker images to run better in OpenShift.  We'll also be building a source-2-image system and template that will make it easier to deploy OpenUnison.  Not only will this make it easier to manage configurations but also adding customizations to OpenUnison in a Docker image.
+From here we're going to be updating our Docker images to run better in OpenShift.  We'll also be building a source-2-image system and template that will make it easier to deploy OpenUnison.  Not only will this make it easier to manage configurations but also adding customizations to OpenUnison in a Docker image.  We're also going to add better support for using the Kubernetes secret and config APIs for less reliance on persistent volumes for configuration.
 
 ## Tremolo Security
 Useful links
