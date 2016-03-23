@@ -39,8 +39,31 @@ Our first pass we tried to use the [All-In-One OpenShift Origin VM](https://www.
 
 Once we made that decision the next choice we had was to either go with the downloading the Origin docker container or the "advanced" options.  We were able to get the docker image working quickly, but it appeared to just be the Origin webapp and services but it didn't seem to be a 1-1 with the all-in-one VM so we looked at following the "Advanced" instructions from the [Advanced Installation](https://docs.openshift.org/latest/install_config/install/index.html) section of the Origin documentation.
 
-The deployment was really very easy at that point.  We ended up using the docker image based install versus using RPMs.  We ran into an issue with the RPM based install where the Ansible playbooks were looking for synmlinks that weren't there.  We ran the Ansible playbooks from a local CentOS 7 VM, first generating the an SSH key for root and deploying it to the OpenShift demo server.  Then we created the
-following /etc/ansible/hosts on the Playbook system:
+The deployment was really very easy at that point.  We ended up using the docker image based install versus using RPMs.  We ran into an issue with the RPM based install where the Ansible playbooks were looking for synmlinks that weren't there.  We ran the Ansible playbooks from a local CentOS 7 VM, first generating the an SSH key for root and deploying it to the OpenShift demo server.  
+
+To get OpenShift up and running we:
+
+1. Installed a CentOS 7 minimal install for the OpenShift host (openshift.tremolo.lan) and followed the directions on the [Prerequisites](https://docs.openshift.org/latest/install_config/install/prerequisites.html) site, specificly:
+   1.  `yum install wget git net-tools bind-utils iptables-services bridge-utils bash-completion`
+   2.  `yum update`
+   3.  `yum -y install https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm`
+   4.  `sed -i -e "s/^enabled=1/enabled=0/" /etc/yum.repos.d/epel.repo`
+   5.  `systemctl stop firewalld`
+   6.  `systemctl disable firewalld`
+   5.  Installed Docker using [the instructions from Docker](https://docs.docker.com/engine/installation/linux/centos/)
+2. We setup another CentOS 7 minimal install as the Ansible host and followed the directions on the [Prerequisites](https://docs.openshift.org/latest/install_config/install/prerequisites.html) site, specificly:
+  1. `yum install wget git net-tools bind-utils iptables-services bridge-utils bash-completion`
+  2. `yum update`
+  3. `yum -y install https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm`
+  4. `sed -i -e "s/^enabled=1/enabled=0/" /etc/yum.repos.d/epel.repo`
+  5. `yum -y --enablerepo=epel install ansible pyOpenSSL`
+  6. Generate an ssh key and add it to the /root/.ssh/authorized_keys file so root can SSH in without a password
+  7. Cloned the openshift-ansible github repository
+    1. `cd ~`
+    2. `git clone https://github.com/openshift/openshift-ansible`
+    3. `cd openshift-ansible`
+
+Then we created the following /etc/ansible/hosts on the Ansible host system:
 
 ```
 [OSEv3:children]
@@ -59,7 +82,13 @@ openshift.tremolo.lan containerized=true
 openshift.tremolo.lan containerized=true openshift_scheduleable=true
 ```
 
-Once the playbook was completed (maybe 10 minutes) we had to create the admin user.  While logged into the master:
+The above hosts file will deploy OpenShift as both a master and node on a single server (openshift.tremolo.lan) using the docker images method instead of RPMs configuring OpenShift to use the generic HTPassword system from apache for authentication.  Finally, from the Ansible host we ran the playbook:
+
+```bash
+$ ansible-playbook /root/openshift-ansible/playbooks/byo/config.yml
+```
+
+If all goes well it will take a few minutes for OpenShift to setup and deploy.  Once the playbook was completed (maybe 10 minutes) we had to create the admin user.  While logged into the master:
 
 ```
 $ htpasswd /etc/origin/master/htpasswd admin
@@ -70,6 +99,7 @@ $ oadm policy add-cluster-role-to-user cluster-admin admin
 ```  
 
 At this point the admin user was able to login to OpenShift using both the website AND the command line tools remotely and we were ready to start deploying.
+
 
 ## Docker Repository
 
